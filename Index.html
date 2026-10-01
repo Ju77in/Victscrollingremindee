@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hey Victoria</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500;1,600&family=DM+Sans:wght@400;500&display=swap">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --sky1:#e9e4ff; --sky2:#ffe3ec; --sky3:#ffeede;
+  --ink:#3a2a55; --soft:#6d5a8c; --card:rgba(255,255,255,.62); --line:rgba(58,42,85,.14);
+  --orb1:#fff6e6; --orb2:#ffc9d9; --btn:#3a2a55; --btnink:#fff; --glow:rgba(255,190,215,.55);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --sky1:#1c1738; --sky2:#3a2450; --sky3:#4a2b4d;
+  --ink:#f6ecff; --soft:#c9b6e6; --card:rgba(255,255,255,.08); --line:rgba(246,236,255,.18);
+  --orb1:#ffe9c9; --orb2:#ff9fc0; --btn:#f6ecff; --btnink:#2a1d44; --glow:rgba(255,150,190,.35);}}
+:root[data-theme="dark"]{
+  --sky1:#1c1738; --sky2:#3a2450; --sky3:#4a2b4d;
+  --ink:#f6ecff; --soft:#c9b6e6; --card:rgba(255,255,255,.08); --line:rgba(246,236,255,.18);
+  --orb1:#ffe9c9; --orb2:#ff9fc0; --btn:#f6ecff; --btnink:#2a1d44; --glow:rgba(255,150,190,.35);}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;
+  background:linear-gradient(170deg,var(--sky1),var(--sky2) 60%,var(--sky3));background-attachment:fixed;
+  display:flex;justify-content:center;overflow-x:hidden}
+.wrap{width:100%;max-width:560px;padding:56px 24px 72px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.orb{width:132px;height:132px;border-radius:50%;margin-bottom:36px;
+  background:radial-gradient(circle at 35% 30%,var(--orb1),var(--orb2) 70%);
+  box-shadow:0 0 70px 18px var(--glow);animation:float 7s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-12px)}}
+h1,h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;font-style:italic;margin:0;letter-spacing:-.01em}
+h1{font-size:clamp(2.6rem,11vw,4rem);line-height:1.02}
+.sub{color:var(--soft);margin:18px 0 38px;font-size:1.02rem;line-height:1.55;max-width:34ch}
+.choices{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+button{font:inherit;cursor:pointer;border-radius:999px;padding:15px 34px;font-size:1rem;font-weight:500;
+  border:1px solid var(--line);transition:transform .2s,box-shadow .2s}
+button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+button:active{transform:scale(.97)}
+.primary{background:var(--btn);color:var(--btnink);border-color:transparent}
+.ghost{background:var(--card);color:var(--ink);backdrop-filter:blur(8px)}
+#result{width:100%;margin-top:6px}
+.panel{animation:rise .6s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+h2{font-size:clamp(2.1rem,9vw,3rem);line-height:1.08;margin-bottom:10px}
+.list{list-style:none;margin:28px 0 0;padding:0;text-align:left;display:grid;gap:12px}
+.list li{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px 20px;backdrop-filter:blur(8px)}
+.list b{display:block;font-weight:500;margin-bottom:3px}
+.list span{color:var(--soft);font-size:.94rem;line-height:1.5}
+.pause{margin-top:26px}
+#t{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:3.2rem;margin:8px 0}
+.badge{width:170px;height:170px;margin:26px auto 12px;display:block}
+.words{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(1.7rem,7vw,2.3rem);line-height:1.2;min-height:3.6em;margin:10px 0 22px}
+.back{margin-top:34px;background:none;border:none;color:var(--soft);text-decoration:underline;padding:8px;font-size:.92rem}
+.theme{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));right:16px;padding:8px 14px;font-size:.85rem;background:var(--card);color:var(--ink)}
+@media (prefers-reduced-motion:reduce){.orb,.panel{animation:none}}
+</style>
+</head>
+<body>
+<button class="theme" id="theme" aria-label="Toggle light or dark">☾</button>
+<main class="wrap">
+  <div class="orb" aria-hidden="true"></div>
+  <div id="ask" class="panel">
+    <h1>Victoria, are you doomscrolling right now?</h1>
+    <p class="sub">No judgment. Just a gentle check-in from someone who wants good things for you.</p>
+    <div class="choices">
+      <button class="primary" id="yes">Yes, I am</button>
+      <button class="ghost" id="no">Nope, I'm good</button>
+    </div>
+  </div>
+  <section id="result" aria-live="polite"></section>
+</main>
+<script>
+var ask=document.getElementById('ask'),res=document.getElementById('result');
+var lines=["Good girl. Look at you, choosing yourself.","I'm so proud of you, Victoria.","Your mind deserves peace, and you're giving it that.","You're doing better than you think you are.","Proud of you for being present. It matters.","You are enough, exactly as you are."];
+var li=0;
+function show(html){ask.style.display='none';res.innerHTML='<div class="panel">'+html+'</div>';window.scrollTo(0,0)}
+document.getElementById('yes').onclick=function(){
+  show('<h2>It happens. Let\'s step out gently.</h2><p class="sub" style="margin:10px auto 0">You noticed, and that is the hardest part. Try one of these.</p>'+
+  '<ul class="list">'+
+  '<li><b>Put the phone in another room</b><span>Ten minutes is enough to break the loop. Out of sight really does work.</span></li>'+
+  '<li><b>Read something soft</b><span>Try "Digital Minimalism" by Cal Newport, "Stolen Focus" by Johann Hari, or a cozy novel.</span></li>'+
+  '<li><b>Use an app that blocks the scroll</b><span>One Sec, Forest, or Screen Time and Digital Wellbeing limits on Instagram and TikTok.</span></li>'+
+  '<li><b>Move your body</b><span>A short walk, a stretch, or a dance to one favorite song.</span></li>'+
+  '<li><b>Write it out</b><span>Three lines: how I feel, what I need, one small thing I can do.</span></li>'+
+  '<li><b>Breathe</b><span>In for 4, hold for 4, out for 6. Repeat five times.</span></li></ul>'+
+  '<div class="pause"><p class="sub" style="margin:0 auto">Ready to try a 5-minute phone-free pause?</p><div id="t" aria-live="off">5:00</div><button class="primary" id="go">Start pause</button></div>'+
+  '<button class="back" id="again">Start over</button>');
+  var go=document.getElementById('go');
+  go.onclick=function(){var s=300,el=document.getElementById('t');go.disabled=true;go.textContent='Breathe…';
+    var iv=setInterval(function(){s--;el.textContent=Math.floor(s/60)+':'+('0'+s%60).slice(-2);
+      if(s<=0){clearInterval(iv);el.textContent='Done';go.textContent='You did it';}},1000);};
+  document.getElementById('again').onclick=reset;
+};
+document.getElementById('no').onclick=function(){
+  show('<svg class="badge" viewBox="0 0 200 200" aria-hidden="true"><defs><radialGradient id="g" cx="35%" cy="30%"><stop offset="0" stop-color="#fff6e6"/><stop offset="1" stop-color="#ffb3cc"/></radialGradient></defs>'+
+  '<g fill="url(#g)" stroke="#d98aa8" stroke-width="2"><polygon points="100,8 118,28 144,22 150,48 176,56 166,80 184,100 166,120 176,144 150,152 144,178 118,172 100,192 82,172 56,178 50,152 24,144 34,120 16,100 34,80 24,56 50,48 56,22 82,28"/></g>'+
+  '<circle cx="100" cy="100" r="52" fill="none" stroke="#d98aa8" stroke-width="2" stroke-dasharray="3 5"/>'+
+  '<path d="M100 128 C70 106 74 80 92 82 C98 83 100 90 100 90 C100 90 102 83 108 82 C126 80 130 106 100 128Z" fill="#e0678f"/></svg>'+
+  '<h2>Award: Present &amp; Proud</h2><p class="words" id="w">'+lines[0]+'</p>'+
+  '<button class="primary" id="more">Another one</button><br><button class="back" id="again">Start over</button>');
+  document.getElementById('more').onclick=function(){li=(li+1)%lines.length;document.getElementById('w').textContent=lines[li];};
+  document.getElementById('again').onclick=reset;
+};
+function reset(){res.innerHTML='';ask.style.display='';window.scrollTo(0,0)}
+var tb=document.getElementById('theme'),root=document.documentElement;
+tb.onclick=function(){var dark=root.getAttribute('data-theme')==='dark'||(!root.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme:dark)').matches);
+  root.setAttribute('data-theme',dark?'light':'dark');tb.textContent=dark?'☾':'☀';};
+</script>
+</body>
+</html>
